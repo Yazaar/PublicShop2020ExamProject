@@ -1,0 +1,24 @@
+h1 Top users
+section
+    -@top10users.each do |usr|
+        a href="/u/#{usr.username}" class="userBoard linkOverride userBoardHover"
+            img src="/u/#{usr.username}/profile_picture"
+            section
+                h1 #{usr.username}
+                p rating: #{usr.reviewcount == 0 ? 0 : (usr.stars.to_f()/usr.reviewcount).round(1)}/5
+h1 Top products
+section
+    -@top10products.each do |item|
+        a href="/product/#{item.id}" class="product linkOverride"
+            h1 #{item.name}
+            -if item.images.length > 0
+                section class="ProductPreview"
+                    -item.images.each do |imagelink|
+                        img src="#{imagelink}"
+            section class="horizontalSplit"
+                p stock<br>#{item.stock}
+                p price<br>#{item.price}
+            section class="horizontalSplit"
+                p owner<br>#{item.username}
+                p rating<br>#{item.reviewcount == 0 ? 0 : (item.stars.to_f()/item.reviewcount).round(1)}/5
+script src="/js/productPreviewer.js"

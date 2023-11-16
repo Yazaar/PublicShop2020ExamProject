@@ -1,0 +1,68 @@
+section
+    a href="/u/#{@product_info.username}" class="userBoard linkOverride userBoardHover"
+        img src="/u/#{@product_info.username}/profile_picture"
+        h1 #{@product_info.username}
+-if @product_info.images.length > 0
+    h1 class="productImagesTitle" Product images:
+section class="horizontalSplit"
+    -if @product_info.images.length > 0
+        section class="productGallery"
+            -@product_info.images.each do |item|
+                img src="/#{item}" alt="preview image of product"
+    section class="productDetails"
+        h1 #{@product_info.username}'s #{@product_info.name}
+        h2 Rating
+        p #{@product_info.reviewcount == 0 ? 0 : (@product_info.stars.to_f()/@product_info.reviewcount).round(1)}/5 (#{@product_info.stars} stars, #{@product_info.reviewcount} reviews)
+        h2 Price
+        p #{@product_info.price} :-
+        h2 Stock
+        p #{@product_info.stock}
+        h2 Description
+        p #{@product_info.description}
+        -if @current_user
+            form action="/u/#{@current_user.username}/cart/add" method="post" class="standardForm normalize"
+                -@product_info.addons.each_with_index do |part, index|
+                    section
+                        label for="part_#{index}" #{part[0]}: 
+                        select name="part_#{part[0]}" id="part_#{index}"
+                            option value="" hidden=""
+                            -part[1].each do |option|
+                                option value="#{option.partname}" #{option.partname} (+#{option.bonus_price} :-)
+                -if @product_info.stock > 0
+                    button type="submit" name="productId" value="#{@product_info.id}" Add to cart
+            -if params['status'] == 'purchase_added'
+                p Product added to cart!
+                a href="/u/#{@current_user.username}/cart" view cart here
+            -elsif params['status'] == 'out_of_stock'
+                p Product of stock
+        -else
+            -@product_info.addons.each_with_index do |part, index|
+                section
+                    label for="part_#{index}" #{part[0]}: 
+                    select name="part_#{part[0]}" id="part_#{index}"
+                        option value="empty" hidden=""
+                        -part[1].each do |option|
+                            option value="#{option.partname}" #{option.partname} (+#{option.bonus_price} :-)
+
+section class="PushDown"
+    -if @current_user && @current_user.id != @product_info.user_id
+        form action="/product/#{@product_info.id}/setcomment" method="post" class="standardForm commentForm"
+            h1 comment
+            textarea name="comment" cols="30" rows="3"
+            h1 rating
+            select name="rating" value="empty"
+                option value="empty" hidden=""
+                option value="0" 0 stars
+                option value="1" 1 star
+                option value="2" 2 stars
+                option value="3" 3 stars
+                option value="4" 4 stars
+                option value="5" 5 stars
+            button type="submit" save
+    -@comments.each do |comment|
+        section class="LeftBorder"
+            h1
+                a href="/u/#{comment.username}" class="linkOverride" #{comment.username}
+            h4 #{comment.rating}/5
+            p #{comment.timestamp}
+            p #{comment.comment}

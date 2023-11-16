@@ -1,0 +1,53 @@
+section class="forceRows"
+    section class="userBoard userpageUserBoard"
+        img src="/u/#{@searched_user.username}/profile_picture" alt="#{@searched_user.username}'s profile picture"
+        h1 #{@searched_user.username}
+    section class="userBoardDetails"
+        h3 Rating
+        p #{@searched_user.reviewcount == 0 ? 0 : (@searched_user.stars.to_f()/@searched_user.reviewcount).round(1)}/5 (#{@searched_user.stars} stars, #{@searched_user.reviewcount} reviews)
+        h3 Description:
+        p #{@searched_user.description}
+
+-if @current_user && (@current_user.id == @searched_user.id || @current_user.admin == 1)
+    section id="adminTools"
+        a href="/u/#{@searched_user.username}/manage" class="linkOverride" admin tools
+        a href="/u/#{@searched_user.username}/cart" class="linkOverride" my cart
+
+section id="products"
+    -@products.each do |item|
+        a href="/product/#{item.id}" class="product linkOverride"
+            h1 #{item.name}
+            -if item.images.length > 0
+                section class="ProductPreview"
+                    -item.images.each do |imagelink|
+                        img src="/#{imagelink}"
+            section class="horizontalSplit"
+                p stock<br>#{item.stock}
+                p price<br>#{item.price}
+            section class="horizontalSplit"
+                p owner<br>#{@searched_user.username}
+                p rating<br>#{item.reviewcount == 0 ? 0 : (item.stars.to_f()/item.reviewcount).round(1)}/5
+
+section class="comments"
+    -if @current_user && @current_user.id != @searched_user.id
+        form action="/u/#{@searched_user.username}/setcomment" method="post" class="standardForm commentForm"
+            h1 comment
+            textarea name="comment" cols="30" rows="3"
+            h1 rating
+            select name="rating" value="empty"
+                option value="empty" hidden=""
+                option value="0" 0 stars
+                option value="1" 1 star
+                option value="2" 2 stars
+                option value="3" 3 stars
+                option value="4" 4 stars
+                option value="5" 5 stars
+            button type="submit" save
+    -@comments.each do |comment|
+        section class="LeftBorder"
+            h1
+                a href="/u/#{comment.username}" class="linkOverride" #{comment.username}
+            h4 #{comment.rating}/5
+            p #{comment.timestamp}
+            p #{comment.comment}
+script src="/js/productPreviewer.js"

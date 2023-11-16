@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+html lang="en"
+    head
+        meta charset="UTF-8"
+        meta name="viewport" content="width=device-width, initial-scale=1.0"
+        meta http-equiv="X-UA-Compatible" content="ie=edge"
+        title #{@title ? @title + ' | PublicShop' : 'PublicShop'}
+        link rel="stylesheet" href="/css/global.css"
+        -if @css
+            -@css.each do |filename|
+                link rel="stylesheet" href="/css/#{filename}"
+    body
+        header
+            section id="leftHeader"
+                a href="/" class="home linkOverride"
+                    span Public
+                    span Shop
+                form action="/search" method="get" class="searchForm"
+                    input type="text" name="q" placeholder="Search!"
+                    button type="submit" Search
+            section id="rightHeader"
+                -if @current_user
+                    a href="/u/#{@current_user.username}" class="linkOverride" Account
+                    a href="/logout" class="linkOverride" Logout
+                -else
+                    a href="/login" class="linkOverride" login
+                    a href="/register" class="linkOverride" register
+        ==yield

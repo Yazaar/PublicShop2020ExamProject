@@ -1,0 +1,17 @@
+div class="center"
+    form action="/register" method="post" class="standardForm"
+        h1 class="title" Register:
+        label for="email" e-mail
+        input type="email" name="email" id="email" placeholder="e-mail"
+        label for="username" username
+        input type="text" name="username" id="username" placeholder="username"
+        label for="password" password
+        input type="password" name="password" id="password" placeholder="password"
+        label for="passwordCopy" confirm password
+        input type="password" name="passwordCopy" id="passwordCopy" placeholder="password"
+        label for="birthDate" Birth date
+        input type="date" name="birthDate" id="birthDate"
+        p class="error" style="display:None" passwords does not match
+        button type='submit' register
+        - if @error_message
+            p class="error" #{@error_message}

@@ -1,0 +1,24 @@
+section id="searchResults"
+    -if @query_user
+        h1 Found user:
+        a href="/u/#{@query_user.username}" class="userBoard linkOverride userBoardHover"
+            img src="/u/#{@query_user.username}/profile_picture"
+            h1 #{@query_user.username}
+    - if @query_products.length > 0
+        h1 Found products:
+        - @query_products.each do |item|
+            a href="/product/#{item.id}" class="product linkOverride"
+                h1 #{item.name}
+                -if item.images.length > 0
+                    section class="ProductPreview"
+                        -item.images.each do |imagelink|
+                            img src="#{imagelink}"
+                section class="horizontalSplit"
+                    p stock<br>#{item.stock}
+                    p price<br>#{item.price}
+                section class="horizontalSplit"
+                    p owner<br>#{item.username}
+                    p rating<br>#{item.reviewcount == 0 ? 0 : (item.stars.to_f()/item.reviewcount).round(1)}/5
+    - if !@query_user && @query_products.length == 0
+        h1 No results
+script src="/js/productPreviewer.js"

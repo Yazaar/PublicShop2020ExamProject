@@ -1,0 +1,12 @@
+div class="center"
+    form action="/login" method="post" class="standardForm"
+        h1 class="title" Login:
+        label for="email" e-mail
+        input type="email" name="email" id="email" placeholder="e-mail"
+        label for="password" password
+        input type="password" name="password" id="password" placeholder="password"
+        button type='submit' login
+        -if @error_message
+            p class="error" #{@error_message}
+        -elsif @success_message
+            p class="message" #{@success_message}

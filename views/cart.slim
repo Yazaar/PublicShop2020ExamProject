@@ -1,0 +1,15 @@
+section id="cart"
+    -@managed_cart.each do |item|
+        section class="cartItem"
+            p= item.timestamp
+            a href="/product/#{item.product_id}" #{item.product_name}
+            a href="/u/#{item.shop_owner_name}" #{item.shop_owner_name}
+            p base price: #{item.base_price} :-
+            -item.configs.each do |config|
+                p #{config.groupname}: #{config.partname} (+ #{config.bonus_price}:-)
+            - if item.checked_out == 0
+                p Pay not completed
+                form action="/u/#{@managed_user.username}/cart/delete" method="post" class="standardForm normalize"
+                    button type="submit" name="purchaseId" value="#{item.id}" Undo purchase
+            - else
+                p Pay completed

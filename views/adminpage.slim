@@ -1,0 +1,104 @@
+
+
+a class="linkOverride BackToShop" href="/u/#{@managed_user.username}" Back to shop
+h1 Admin page for #{@managed_user.username}
+
+h2 class="AdminSettingSection" User settings:
+- if @current_user.admin == 1
+    section class="LeftBorder"
+        -if @managed_user.admin == 0
+            h3 class="AdminSetting" Make admin
+        -else
+            h3 class="AdminSetting" Remove admin
+        form method="post" action="/u/#{@managed_user.username}/manage/toggle_admin" class="standardForm normalize"
+            p Type the username and hit confirm to toggle the admin status
+            input type="text" name="confirm"
+            button type="submit" ADMIN USER
+
+section class="LeftBorder"
+    h3 class="AdminSetting" Delete account
+    form method="post" action="/u/#{@managed_user.username}/manage/delete_user" class="standardForm normalize"
+        p Type the username and hit confirm to delete account (not reversible!)
+        input type="text" name="confirm"
+        button type="submit" DELETE
+
+section class="LeftBorder"
+    h3 class="AdminSetting" Profile picture:
+    img src="/u/#{@managed_user.username}/profile_picture" alt="profile picture"
+    h4 class="SettingsTitle" style="display:none;" id="PreviewText" Preview:
+    canvas id="UploadFile" height="126" width="126" style="display:none;"
+    h4 class="SettingsTitle" Upload new profile picture:
+    input type="file" name="fileupload" id="fileupload"
+    button id="SendImage" style="display:none;" Save
+    form style="display:none;" method="post" action="/u/#{@managed_user.username}/manage/profile_picture"
+        input type="text" name="image" id="ImageTextField"
+        button id="SendProfilePicture" type="submit"
+
+h2 class="AdminSettingSection" Products:
+section class="LeftBorder"
+    h3 class="AdminSetting" Create Product
+    section class="LeftBorder"
+        form method="post" action="/u/#{@managed_user.username}/manage/product/new" id="CreateProduct" class="standardForm normalize"
+            input type="text" name="name" placeholder="Product name"
+            input type="number" name="price" placeholder="Product price"
+            input type="number" name="stock" placeholder="Product stock"
+            input type="text" name="description" placeholder="Product description"
+            button type="submit" create
+
+    form style="display:none;" method="post" action="/u/#{@managed_user.username}/manage/product_pictures" id="ProductImageSubmitter"
+        input type="text" name="action" class="formAction"
+        input type="text" name="productId" class="formProductId"
+        input type="text" name="imageId" class="formImageId"
+        input type="text" name="base64Image" class="formBase64Image"
+    -@managed_products.each do |item|
+        h3 class="AdminSetting" #{item.name}
+        section class="LeftBorder"
+            form method="post" action="/product/#{item.id}/delete" class="standardForm normalize"
+                button type="submit" Delete product
+            h4 class="SettingsTitle" details:
+            section class="LeftBorder"
+                form action="/product/#{item.id}/edit" method="post" class="standardForm normalize"
+                    label for="productDetialName#{item.id}" name
+                    input type="text" name="name" id="productDetialName#{item.id}" class="formName"  value="#{item.name}"
+                    label for="productDetialPrice#{item.id}" price
+                    input type="number" name="price" id="productDetialPrice#{item.id}" class="formPrice" value="#{item.price}"
+                    label for="productDetialStock#{item.id}" stock
+                    input type="number" name="stock" id="productDetialStock#{item.id}" class="formStock" value="#{item.stock}"
+                    label for="productDetialDescription#{item.id}" description
+                    input type="text" name="description" id="productDetialDescription#{item.id}" class="formDescription" value="#{item.description}"
+                    button type="submit" Update details
+            h4 class="SettingsTitle" parts:
+            section class="LeftBorder"
+                -item.addons.each do |part|
+                    p class="PartItem" #{part[0]}
+                    form action="/u/#{@managed_user.username}/manage/group/delete" method="post" class="standardForm normalize"
+                        input type="text" style="display:none;" name="product_id" value="#{item.id}"
+                        button type="submit" name="group_name" value="#{part[0]}" Delete group
+                    section class="LeftBorder"
+                        -part[1].each_with_index do |option, index|
+                            form action="/u/#{@managed_user.username}/manage/part/update" method="post" class="standardForm normalize"
+                                input class="PushDown" type="text" name="partname" value="#{option.partname}"
+                                input type="number" name="bonusprice" value="#{option.bonus_price}"
+                                button type="submit" name="part_id" value="#{option.id}" Update
+                            form action="/u/#{@managed_user.username}/manage/part/delete" method="post" class="standardForm normalize"
+                                button type="submit" name="part_id" value="#{option.id}" Delete
+                        form action="/u/#{@managed_user.username}/manage/part/new" method="post" class="standardForm normalize"
+                            input type="text" value="#{part[0]}" name="groupname" style="display:none"
+                            input class="PushDown" type="text" value="" name="partname" placeholder="partname"
+                            input type="number" value="" name="bonusprice" placeholder="bonus price"
+                            button type="submit" name="product_id" value="#{item.id}" Create
+                form action="/u/#{@managed_user.username}/manage/group/new" method="post" class="standardForm normalize PushDown"
+                        input type="text" value="" name="groupname" placeholder="groupname"
+                        input type="text" value="" name="partname" placeholder="partname"
+                        input type="number" value="" name="bonusprice" placeholder="bonus price"
+                        button type="submit" name="product_id" value="#{item.id}" Create
+
+            h4 class="SettingsTitle" images:
+            section class="LeftBorder"
+                -item.images.each do |imglink|
+                    img src="/#{imglink}" class="AdminProductPreview"
+                label for="FileUpload#{item.id}" Upload image:
+                canvas class="UploadPreview" data-productid="#{item.id}" height="0" width="0"
+                input type="file" id="FileUpload#{item.id}" class="NewProductImagePicker"
+
+script src="/js/adminpage.js"
